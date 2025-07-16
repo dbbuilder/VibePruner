@@ -1,0 +1,12 @@
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/bin/Debug/net8.0/VibePruner.Application.deps.json
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/bin/Debug/net8.0/VibePruner.Application.dll
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/bin/Debug/net8.0/VibePruner.Application.pdb
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.GeneratedMSBuildEditorConfig.editorconfig
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.AssemblyInfoInputs.cache
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.AssemblyInfo.cs
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.csproj.CoreCompileInputs.cache
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.sourcelink.json
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.dll
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/refint/VibePruner.Application.dll
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/VibePruner.Application.pdb
+/mnt/d/dev2/vibepruner/src/VibePruner.Application/VibePruner.Application/obj/Debug/net8.0/ref/VibePruner.Application.dll

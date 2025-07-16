@@ -1,0 +1,6 @@
+@VibePruner.API_HostAddress = http://localhost:5038
+
+GET {{VibePruner.API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
