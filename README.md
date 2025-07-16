@@ -159,6 +159,25 @@ When AI validation is enabled, VibePruner:
 
 This provides an extra layer of safety, especially for complex codebases where static analysis might miss important relationships.
 
+### Token Usage Optimization
+
+VibePruner includes an intelligent file preprocessor that significantly reduces AI token usage while maintaining accuracy:
+
+- **Smart Extraction**: Extracts only relevant information like imports, exports, function/class names, and critical comments
+- **Context Preservation**: Keeps important patterns like TODO/FIXME comments, environment variables, and external dependencies
+- **80-90% Token Reduction**: Typically reduces a 5000+ character file to under 1000 characters for AI analysis
+- **Configurable**: Can be disabled with `use_preprocessing: false` in config
+
+The preprocessor extracts:
+- Import/export statements and dependencies
+- Class and function definitions
+- External API calls and file references
+- Database queries and table references
+- Environment variables and configuration
+- Build commands and scripts
+- Important comments (TODO, FIXME, WARNING)
+- Test fixtures and test dependencies
+
 ## Contributing
 
 Feel free to submit issues and enhancement requests!

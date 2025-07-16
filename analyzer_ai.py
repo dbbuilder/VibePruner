@@ -15,6 +15,7 @@ from analyzer import FileAnalyzer
 from ai_validation import ConsensusValidator, ConsensusMode
 from ai_providers.base import FileValidationContext, ValidationStatus
 from ai_providers.factory import create_default_providers
+from file_preprocessor import FilePreprocessor, FileContext
 
 logger = logging.getLogger(__name__)
 
@@ -27,6 +28,8 @@ class AIFileAnalyzer(FileAnalyzer):
         self.ai_enabled = ai_enabled and config.get('ai_validation', {}).get('enabled', True)
         self.ai_validator = None
         self.ai_cache = {}  # Cache AI results by file content hash
+        self.preprocessor = FilePreprocessor()
+        self.use_preprocessing = config.get('ai_validation', {}).get('use_preprocessing', True)
         
         if self.ai_enabled:
             self._initialize_ai_validation()
@@ -156,6 +159,38 @@ class AIFileAnalyzer(FileAnalyzer):
             # Skip very large files
             if len(content) > 100000:  # 100KB limit
                 return None
+            
+            # Use preprocessing if enabled to reduce token usage
+            if self.use_preprocessing:
+                try:
+                    # Extract key information
+                    extracted_context = self.preprocessor.preprocess_file(full_path, content)
+                    
+                    # Create a condensed version for AI
+                    condensed_content = f"""
+=== FILE SUMMARY ===
+{extracted_context.to_summary()}
+
+=== KEY CODE SECTIONS ===
+"""
+                    # Add first 20 lines for context
+                    lines = content.splitlines()[:20]
+                    if lines:
+                        condensed_content += "First 20 lines:\n"
+                        condensed_content += "\n".join(f"{i+1}: {line}" for i, line in enumerate(lines))
+                    
+                    # Add any important comments
+                    if extracted_context.important_comments:
+                        condensed_content += "\n\nImportant Comments:\n"
+                        condensed_content += "\n".join(f"- {c}" for c in extracted_context.important_comments[:5])
+                    
+                    # Use condensed content instead of full content
+                    content = condensed_content
+                    logger.debug(f"Preprocessed {file_path}: {len(condensed_content)} chars (from {extracted_context.line_count} lines)")
+                    
+                except Exception as e:
+                    logger.warning(f"Preprocessing failed for {file_path}, using full content: {e}")
+                    # Fall back to full content
             
             # Determine file type category
             file_type = self._categorize_file_type(file_path, file_info)
