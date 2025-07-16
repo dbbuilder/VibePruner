@@ -67,5 +67,36 @@
     "max_preview_size": 10000,
     "show_hidden_files": false,
     "syntax_highlighting": true
+  },
+  "ai_validation": {
+    "enabled": false,
+    "providers": {
+      "openai": {
+        "enabled": true,
+        "api_key": "${OPENAI_API_KEY}",
+        "model": "gpt-4-turbo-preview",
+        "max_tokens": 4000,
+        "temperature": 0.2
+      },
+      "claude": {
+        "enabled": true,
+        "api_key": "${CLAUDE_API_KEY}",
+        "model": "claude-3-opus-20240229",
+        "max_tokens": 4000,
+        "temperature": 0.2
+      },
+      "gemini": {
+        "enabled": true,
+        "api_key": "${GEMINI_API_KEY}",
+        "model": "gemini-pro",
+        "max_tokens": 4000,
+        "temperature": 0.2
+      }
+    },
+    "consensus_mode": "majority",
+    "confidence_threshold": 0.8,
+    "max_cost_per_run": 5.00,
+    "cache_ttl_hours": 24,
+    "batch_size": 10
   }
 }

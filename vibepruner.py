@@ -14,6 +14,7 @@ from pathlib import Path
 from datetime import datetime
 
 from analyzer import FileAnalyzer
+from analyzer_ai import AIFileAnalyzer
 from test_guardian import TestGuardian
 from md_parser import MarkdownParser
 from project_parser import ProjectParser
@@ -23,6 +24,7 @@ from migration_tracker import MigrationTracker
 from rollback_manager import RollbackManager
 from session_manager import SessionManager
 from audit_logger import AuditLogger, AuditEvent
+import asyncio
 
 # Set up logging with more detail
 logging.basicConfig(
@@ -46,7 +48,14 @@ class VibePruner:
         self.work_dir.mkdir(exist_ok=True)
         
         # Initialize core components
-        self.analyzer = FileAnalyzer(self.config)
+        # Use AI-enhanced analyzer if AI is enabled
+        ai_enabled = self.config.get('ai_validation', {}).get('enabled', False)
+        if ai_enabled:
+            self.analyzer = AIFileAnalyzer(self.config)
+            logger.info("AI-enhanced file analysis enabled")
+        else:
+            self.analyzer = FileAnalyzer(self.config)
+        
         self.test_guardian = TestGuardian(self.config)
         self.md_parser = MarkdownParser(self.config)
         self.project_parser = ProjectParser(self.config)
@@ -199,19 +208,33 @@ class VibePruner:
         self.session_manager.update_phase('file_analysis')
         
         try:
-            file_analysis = self.analyzer.analyze_directory(self.project_path)
+            # Use AI-enhanced analysis if available
+            if isinstance(self.analyzer, AIFileAnalyzer) and self.analyzer.ai_enabled:
+                # Run async AI validation
+                file_analysis = asyncio.run(self.analyzer.analyze_directory_with_ai(self.project_path))
+            else:
+                file_analysis = self.analyzer.analyze_directory(self.project_path)
             
             self.session_manager.update_stats(
                 files_analyzed=file_analysis['total_files']
             )
             
+            # Log AI validation results if available
+            event_data = {'file_types': file_analysis['file_types']}
+            if 'ai_validation' in file_analysis:
+                event_data['ai_validated'] = len(file_analysis['ai_validation'])
+                event_data['ai_unsafe_files'] = len(file_analysis.get('ai_unsafe_files', []))
+            
             self.audit_logger.log_event(
                 AuditEvent.FILE_SCAN,
                 f"Completed file analysis: {file_analysis['total_files']} files",
-                {'file_types': file_analysis['file_types']}
+                event_data
             )
             
             print(f"[OK] Analyzed {file_analysis['total_files']} files")
+            if 'ai_validation' in file_analysis:
+                print(f"[AI] AI validation completed for {len(file_analysis['ai_validation'])} files")
+                
             return file_analysis
             
         except Exception as e:
@@ -263,6 +286,13 @@ class VibePruner:
         proposals = []
         test_baseline = self._load_json('test_baseline.json')
         
+        # Set AI validation results if available
+        if 'ai_validation' in file_analysis:
+            self._current_ai_validation = file_analysis['ai_validation']
+        
+        # Get AI unsafe files if available
+        ai_unsafe_files = set(file_analysis.get('ai_unsafe_files', []))
+        
         for file_path, file_info in file_analysis['files'].items():
             try:
                 # Skip if file is required by project
@@ -273,6 +303,11 @@ class VibePruner:
                 if any(pattern in file_path for pattern in self.config.protected_patterns):
                     continue
                 
+                # Skip if AI marked as unsafe
+                if file_path in ai_unsafe_files:
+                    logger.info(f"Skipping {file_path} - marked unsafe by AI validation")
+                    continue
+                
                 # Calculate confidence score
                 score = self._calculate_confidence_score(
                     file_path, file_info, project_deps, md_refs, test_baseline
@@ -281,6 +316,16 @@ class VibePruner:
                 # Generate proposal based on score and characteristics
                 proposal = self._create_proposal(file_path, file_info, score)
                 if proposal:
+                    # Add AI validation info if available
+                    if 'ai_validation' in file_analysis and file_path in file_analysis['ai_validation']:
+                        ai_result = file_analysis['ai_validation'][file_path]
+                        if ai_result:
+                            proposal['ai_validation'] = {
+                                'status': ai_result.consensus_status.value,
+                                'confidence': ai_result.average_confidence,
+                                'provider_count': len(ai_result.provider_results)
+                            }
+                    
                     proposals.append(proposal)
                     
                     self.audit_logger.log_event(
@@ -292,6 +337,10 @@ class VibePruner:
             except Exception as e:
                 logger.error(f"Error generating proposal for {file_path}: {e}")
                 continue
+        
+        # Clean up temporary attribute
+        if hasattr(self, '_current_ai_validation'):
+            delattr(self, '_current_ai_validation')
         
         self.session_manager.add_checkpoint('proposals', proposals)
         print(f"[OK] Generated {len(proposals)} proposals")
@@ -589,6 +638,14 @@ class VibePruner:
         # Age and size factors
         if file_info.get('days_since_modified', 0) > 180:
             score += 0.1
+        
+        # Apply AI validation adjustment if available
+        if hasattr(self, '_current_ai_validation'):
+            ai_adjustment = self.analyzer.get_ai_confidence_adjustment(
+                file_path, 
+                self._current_ai_validation
+            )
+            score += ai_adjustment
         
         return min(max(score, 0.0), 1.0)  # Clamp between 0 and 1
     

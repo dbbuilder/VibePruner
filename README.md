@@ -13,12 +13,14 @@ An intelligent file cleanup tool with AI-powered validation that ensures your te
 - **Safe Archiving**: Never deletes files - archives them with easy rollback
 - **Multi-Language Support**: Works with Python, C#, JavaScript, TypeScript, Go, Rust, and more
 
-### AI-Powered Validation (Coming Soon)
+### AI-Powered Validation
 - **Multi-Provider Consensus**: Validates with OpenAI GPT-4, Anthropic Claude, and Google Gemini
-- **Cloud-Agnostic**: Supports local models via Ollama/LocalAI for zero-cost operation
+- **Consensus Modes**: Unanimous, majority, or any - you choose the safety level
 - **Smart Caching**: Reduces API costs by 90%+ through intelligent response caching
 - **Confidence Scoring**: AI-enhanced confidence levels for pruning decisions
-- **Safety First**: Multiple AI models must agree before marking files as safe to remove
+- **Safety First**: AI can prevent deletion of files it deems critical
+- **Cloud-Agnostic**: No vendor lock-in, works with any cloud provider
+- **Local Model Support**: Coming soon - Ollama/LocalAI for zero-cost operation
 
 ## Installation
 
@@ -51,13 +53,14 @@ python vibepruner.py /path/to/your/project --verbose
 
 1. **Test Baseline**: Discovers and runs all tests, capturing their output
 2. **File Analysis**: Scans all files and builds a dependency graph
-3. **Project Parsing**: Reads project files to identify required dependencies
-4. **Documentation Check**: Analyzes markdown files for file references
-5. **Proposal Generation**: Suggests files to archive based on multiple factors
-6. **Interactive Review**: Shows proposals in a nice terminal UI for approval
-7. **Safe Execution**: Archives approved files (never deletes)
-8. **Test Validation**: Re-runs tests and compares output
-9. **Auto-Rollback**: If tests fail, automatically restores archived files
+3. **AI Validation** (optional): Multiple AI providers analyze each file for safety
+4. **Project Parsing**: Reads project files to identify required dependencies
+5. **Documentation Check**: Analyzes markdown files for file references
+6. **Proposal Generation**: Suggests files to archive based on multiple factors + AI input
+7. **Interactive Review**: Shows proposals in a nice terminal UI with AI insights
+8. **Safe Execution**: Archives approved files (never deletes)
+9. **Test Validation**: Re-runs tests and compares output
+10. **Auto-Rollback**: If tests fail, automatically restores archived files
 
 ## Configuration
 
@@ -143,6 +146,18 @@ Files are scored based on:
 - File patterns (test, temp, backup)
 - Age and modification time
 - Project file references
+- **AI consensus** (when enabled): Multiple AI models evaluate criticality
+
+## AI Validation Details
+
+When AI validation is enabled, VibePruner:
+1. Sends file content and context to multiple AI providers
+2. Each provider analyzes for hidden dependencies, build references, and criticality
+3. Results are aggregated based on consensus mode (unanimous/majority/any)
+4. AI confidence adjusts the overall pruning confidence score
+5. Files marked "UNSAFE" by AI consensus are never proposed for deletion
+
+This provides an extra layer of safety, especially for complex codebases where static analysis might miss important relationships.
 
 ## Contributing
 

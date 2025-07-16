@@ -89,6 +89,14 @@ class InteractiveUI:
         
         table.add_row("Total Files", str(file_analysis['total_files']))
         table.add_row("Orphaned Files", str(len(file_analysis.get('orphaned_files', []))))
+        
+        # Add AI validation metrics if available
+        if 'ai_validation' in file_analysis:
+            ai_validated = len(file_analysis['ai_validation'])
+            ai_unsafe = len(file_analysis.get('ai_unsafe_files', []))
+            table.add_row("AI Validated Files", str(ai_validated))
+            table.add_row("AI Unsafe Files", f"[red]{ai_unsafe}[/red]")
+        
         table.add_row("Proposed Deletions", str(len(grouped['delete'])))
         table.add_row("Proposed Archives", str(len(grouped['archive'])))
         
@@ -184,6 +192,22 @@ class InteractiveUI:
   References: {file_info.get('reference_count', 0)}
   Is Test: {'Yes' if file_info.get('is_test') else 'No'}
   Is Temp: {'Yes' if file_info.get('is_temp') else 'No'}"""
+        
+        # Add AI validation info if available
+        if 'ai_validation' in proposal:
+            ai_info = proposal['ai_validation']
+            ai_status_color = {
+                'SAFE': 'green',
+                'UNSAFE': 'red',
+                'UNCERTAIN': 'yellow'
+            }.get(ai_info['status'], 'white')
+            
+            details += f"""
+
+[bold]AI Validation:[/bold]
+  Status: [{ai_status_color}]{ai_info['status']}[/{ai_status_color}]
+  AI Confidence: {ai_info['confidence']:.0%}
+  Providers: {ai_info['provider_count']}"""
         
         panel = Panel(details, title="File Information", border_style="blue")
         self.console.print(panel)
