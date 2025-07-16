@@ -1,0 +1,71 @@
+{
+  "protected_patterns": [
+    "README*",
+    "LICENSE*",
+    "CONTRIBUTING*",
+    "CHANGELOG*",
+    "setup.py",
+    "requirements.txt",
+    "package.json",
+    "package-lock.json",
+    "*.sln",
+    "*.csproj",
+    "*.config",
+    "appsettings*.json",
+    ".gitignore",
+    ".dockerignore",
+    "Dockerfile*",
+    "Makefile",
+    "CMakeLists.txt",
+    "*.yml",
+    "*.yaml"
+  ],
+  "temp_patterns": [
+    "*.tmp",
+    "*.temp",
+    "*.cache",
+    "~*",
+    "*.swp",
+    "*.swo",
+    "*.log",
+    "*.bak",
+    "*.backup",
+    "*.old",
+    "*.orig"
+  ],
+  "test_patterns": [
+    "*test*",
+    "*Test*",
+    "*spec*",
+    "*Spec*"
+  ],
+  "archive_path": ".vibepruner_archive",
+  "max_file_size_mb": 100,
+  "ignore_dirs": [
+    ".git",
+    ".vs",
+    ".vscode",
+    ".idea",
+    "__pycache__",
+    "node_modules",
+    "bin",
+    "obj",
+    "dist",
+    "build",
+    ".pytest_cache",
+    ".mypy_cache",
+    "venv",
+    "env"
+  ],
+  "confidence_thresholds": {
+    "high": 0.7,
+    "medium": 0.5,
+    "low": 0.3
+  },
+  "test_timeout_seconds": 300,
+  "ui_settings": {
+    "max_preview_size": 10000,
+    "show_hidden_files": false,
+    "syntax_highlighting": true
+  }
+}

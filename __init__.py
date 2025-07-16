@@ -1,0 +1,1 @@
+# VibePruner - Intelligent file cleanup with test protection

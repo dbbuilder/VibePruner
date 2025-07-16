@@ -1,82 +1,153 @@
 # VibePruner
 
-## Overview
-VibePruner is an intelligent file analysis and cleanup tool that helps developers maintain clean, organized codebases by identifying unreferenced files, consolidating documentation, and removing unnecessary artifacts.
+An intelligent file cleanup tool with AI-powered validation that ensures your tests still work after pruning unnecessary files.
 
 ## Features
-- **Dependency Analysis**: Analyzes file references to identify orphaned files
-- **Smart Archiving**: Archives unreferenced files while maintaining folder structure
-- **Documentation AI**: Uses AI to consolidate and improve documentation
-- **Automated Cleanup**: Removes logs, exports, and temporary files
-- **Multi-Platform**: Runs on Windows, Linux, and macOS
-- **Cloud-Ready**: Designed for Azure deployment
+
+### Core Capabilities
+- **Test Protection**: Captures test outputs before and after changes, ensuring nothing breaks
+- **Smart Analysis**: Identifies orphaned files through dependency analysis
+- **Markdown Parsing**: Checks documentation for file references and importance indicators
+- **Project Awareness**: Understands .sln, .csproj, package.json, and other project files
+- **Interactive Review**: Terminal UI for reviewing and approving proposed changes
+- **Safe Archiving**: Never deletes files - archives them with easy rollback
+- **Multi-Language Support**: Works with Python, C#, JavaScript, TypeScript, Go, Rust, and more
+
+### AI-Powered Validation (Coming Soon)
+- **Multi-Provider Consensus**: Validates with OpenAI GPT-4, Anthropic Claude, and Google Gemini
+- **Cloud-Agnostic**: Supports local models via Ollama/LocalAI for zero-cost operation
+- **Smart Caching**: Reduces API costs by 90%+ through intelligent response caching
+- **Confidence Scoring**: AI-enhanced confidence levels for pruning decisions
+- **Safety First**: Multiple AI models must agree before marking files as safe to remove
 
 ## Installation
 
-### Prerequisites
-- .NET 8.0 SDK or later
-- Azure subscription (for cloud features)
-- AI API keys (Claude, OpenAI, or Gemini)
+```bash
+# Clone the repository
+git clone https://github.com/dbbuilder/VibePruner.git
+cd VibePruner
 
-### Setup Steps
-1. Clone the repository
-2. Navigate to the project directory
-3. Restore NuGet packages: `dotnet restore`
-4. Configure appsettings.json with your API keys
-5. Build the project: `dotnet build`
-6. Run: `dotnet run`
+# Install dependencies
+pip install -r requirements.txt
+
+# Optional: Install for development
+pip install -e .
+```
 
 ## Usage
 
-### Basic Commands
 ```bash
-# Analyze a folder
-vibepruner analyze "C:\MyProject"
+# Basic usage
+python vibepruner.py /path/to/your/project
 
-# Archive unreferenced files
-vibepruner archive "C:\MyProject" --dry-run
+# With custom config
+python vibepruner.py /path/to/your/project --config myconfig.json
 
-# Consolidate documentation
-vibepruner consolidate "C:\MyProject" --ai-provider claude
-
-# Clean up logs and temporary files
-vibepruner clean "C:\MyProject" --older-than 30
-
-# Generate comprehensive report
-vibepruner report "C:\MyProject"
+# Verbose mode
+python vibepruner.py /path/to/your/project --verbose
 ```
 
-### Configuration
-Edit `appsettings.json` to customize:
-- Protected file patterns
-- Archive locations
-- AI provider settings
-- Cleanup rules
+## How It Works
 
-## Architecture
-- **Core**: Business logic and domain models
-- **Infrastructure**: Data access and external services
-- **Application**: Command handlers and orchestration
-- **API**: RESTful endpoints for integration
-- **CLI**: Command-line interface
+1. **Test Baseline**: Discovers and runs all tests, capturing their output
+2. **File Analysis**: Scans all files and builds a dependency graph
+3. **Project Parsing**: Reads project files to identify required dependencies
+4. **Documentation Check**: Analyzes markdown files for file references
+5. **Proposal Generation**: Suggests files to archive based on multiple factors
+6. **Interactive Review**: Shows proposals in a nice terminal UI for approval
+7. **Safe Execution**: Archives approved files (never deletes)
+8. **Test Validation**: Re-runs tests and compares output
+9. **Auto-Rollback**: If tests fail, automatically restores archived files
 
-## Development
-This project uses:
-- Entity Framework Core with stored procedures
-- Serilog for structured logging
-- Polly for resilience patterns
-- Azure Key Vault for secrets
-- Application Insights for monitoring
+## Configuration
+
+Create a `config.json` file to customize behavior:
+
+```json
+{
+  "protected_patterns": ["README*", "LICENSE*", "*.config"],
+  "temp_patterns": ["*.tmp", "*.log", "*.cache"],
+  "confidence_thresholds": {
+    "high": 0.7,
+    "medium": 0.5,
+    "low": 0.3
+  },
+  "ai_validation": {
+    "enabled": true,
+    "providers": {
+      "openai": {
+        "enabled": true,
+        "api_key": "${OPENAI_API_KEY}",
+        "model": "gpt-4-turbo-preview"
+      },
+      "claude": {
+        "enabled": true,
+        "api_key": "${CLAUDE_API_KEY}",
+        "model": "claude-3-opus-20240229"
+      },
+      "gemini": {
+        "enabled": true,
+        "api_key": "${GEMINI_API_KEY}",
+        "model": "gemini-pro"
+      }
+    },
+    "consensus_mode": "majority",
+    "confidence_threshold": 0.8
+  }
+}
+```
+
+### Environment Variables
+
+Set API keys as environment variables for security:
+
+```bash
+export OPENAI_API_KEY="your-openai-key"
+export CLAUDE_API_KEY="your-claude-key"
+export GEMINI_API_KEY="your-gemini-key"
+```
+
+## Test Output Comparison
+
+VibePruner intelligently compares test outputs by:
+- Ignoring timestamps and durations
+- Normalizing file paths
+- Focusing on test counts and pass/fail status
+- Comparing error signatures
+
+This ensures that only meaningful changes in test behavior trigger a rollback.
+
+## Safety Features
+
+- All files are archived, never deleted
+- Automatic rollback if tests fail
+- Dry-run mode available
+- User approval required for all actions
+- Detailed logging of all operations
+
+## Supported Test Frameworks
+
+- **Python**: pytest, unittest
+- **JavaScript/Node**: npm test, jest, mocha
+- **.NET**: dotnet test
+- **Playwright**: Browser automation tests
+- **SQL**: Database unit tests
+- And more...
+
+## File Importance Scoring
+
+Files are scored based on:
+- Reference count (how many files import/use it)
+- Documentation mentions
+- Keywords in docs (required, temporary, deprecated)
+- File patterns (test, temp, backup)
+- Age and modification time
+- Project file references
 
 ## Contributing
-1. Fork the repository
-2. Create a feature branch
-3. Commit your changes
-4. Push to your branch
-5. Create a Pull Request
+
+Feel free to submit issues and enhancement requests!
 
 ## License
-[License details to be added]
 
-## Support
-For issues and questions, please create an issue in the repository.
+[Your license here]

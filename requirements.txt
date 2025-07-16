@@ -1,0 +1,14 @@
+# VibePruner Python Dependencies
+
+# Terminal UI
+rich>=13.0.0
+
+# For potential future enhancements
+click>=8.0.0  # CLI framework
+toml>=0.10.0  # For reading pyproject.toml files
+
+# Development dependencies (optional)
+pytest>=7.0.0
+black>=22.0.0
+mypy>=1.0.0
+flake8>=6.0.0
